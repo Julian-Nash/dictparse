@@ -10,10 +10,22 @@ A simple, slim and useful, zero-dependency utility for parsing JSON strings, dic
 ### Installation
 
 ```shell script
-pip install requestparser
+pip install dictparser
 ```
 
 ### Usage
+
+Importing:
+
+```py3
+from dictparser import DictinaryParser
+```
+
+Creating the parser:
+
+```py3
+parser = DictionaryParser(description="Create a new user")
+```
 
 
 ### Flask example

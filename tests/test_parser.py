@@ -1,4 +1,4 @@
-from dictparser import DictionaryParser, NameSpace
+from dictparser import DictionaryParser, NameSpace, Param
 from dictparser.exceptions import (
     ParserRequiredParameterError,
     ParserInvalidChoiceError,
@@ -7,8 +7,8 @@ from dictparser.exceptions import (
     ParserInvalidDataTypeError
 )
 
-import unittest
 from functools import partial
+import unittest
 
 
 class TestParser(unittest.TestCase):
@@ -217,6 +217,15 @@ class TestParser(unittest.TestCase):
         params: NameSpace = parser.parse_params({"name": "foo", "num": 1})
 
         self.assertEqual(params.get("name"), "foo")
+
+    def test_namespace_get_param_object(self):
+
+        parser = DictionaryParser()
+        parser.add_param("name", str)
+        parser.add_param("num", int)
+        params: NameSpace = parser.parse_params({"name": "foo", "num": 1})
+
+        self.assertIsInstance(params.get_param("name"), Param)
 
     def test_namespace_get_returns_default_none(self):
 

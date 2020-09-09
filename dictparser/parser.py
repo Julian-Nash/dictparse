@@ -18,8 +18,8 @@ class Param(object):
     def __init__(
             self,
             name: str,
-            dest: Optional[str] = None,
             type_: Optional[type] = None,
+            dest: Optional[str] = None,
             required: Optional[bool] = False,
             choices: Optional[Collection] = None,
             action: Optional[Callable] = None,
@@ -28,9 +28,24 @@ class Param(object):
             regex: Optional[str] = None,
             value: Optional[Any] = None
     ):
+        """ Param object
+
+        Args:
+            name (required): The name of the expected parameter
+            type_: The type to convert the parameter to
+            dest: The destination attribute name attached to the NameSpace returned
+            required: True if the parameter is required, otherwise raises ParserRequiredParameterError
+            choices: A list, set or tuple of values which the parameter must be in, otherwise raises
+                     ParserInvalidChoiceError
+            action: A callable which will be applied to the parameter value
+            description: A description of the parameter
+            default: A default value for the parameter, defaults to None
+            regex: A regular expression string which the parameter value must match, otherwise the value is None
+            value: The parameter value, defaults to None
+        """
         self.name = name
-        self.dest = dest or self.name
         self.type_ = type_
+        self.dest = dest or self.name
         self.required = required
         self.choices = choices or []
         self.action = action
@@ -55,9 +70,13 @@ class NameSpace(object):
             self._params.update({param.dest or param.name: param})
             setattr(self, param.dest or param.name, param.value)
 
-    def get(self, name: str, default: Optional[Any] = None) -> Union[Any]:
+    def get(self, name: str, default: Optional[Any] = None) -> Union[None, Any]:
         """ Get a parameter, returns the parameter value or None, unless a default is supplied """
         return getattr(self, name, default)
+
+    def get_param(self, name: str, default: Optional[Any] = None) -> Union[Param, Any]:
+        """ Get a Param, returns the Param object or None, unless a default is supplied """
+        return self._params.get(name, default)
 
     def to_dict(self) -> dict:
         """ Returns the NameSpace as a dictionary """
@@ -65,8 +84,7 @@ class NameSpace(object):
 
 
 class DictionaryParser(object):
-
-    _allowed_types: list = [str, int, float, bool, list, dict, None]
+    """ Dictionary parser class """
 
     def __init__(self, description: Optional[str] = None):
         self.description = description
