@@ -8,6 +8,9 @@ from .exceptions import (
 )
 
 from typing import Optional, Collection, Callable, List, Any, Union, Dict
+from json.decoder import JSONDecodeError
+import json
+import re
 
 
 class Param(object):
@@ -22,6 +25,7 @@ class Param(object):
             action: Optional[Callable] = None,
             description: Optional[str] = None,
             default: Optional[Any] = None,
+            regex: Optional[str] = None,
             value: Optional[Any] = None
     ):
         self.name = name
@@ -32,12 +36,18 @@ class Param(object):
         self.action = action
         self.description = description
         self.default = default
+        self.regex = regex
         self.value = value
 
 
 class NameSpace(object):
 
     def __init__(self, params: List[Param]):
+        """ NameSpace object
+
+        Args:
+            params: A list of Param objects
+        """
         self._fields: List[str] = []
         self._params: Dict[str, Param] = {}
         for param in params:
@@ -54,7 +64,7 @@ class NameSpace(object):
         return {k: getattr(self, k) for k in self._fields if getattr(self, k, None)}
 
 
-class Parser(object):
+class DictionaryParser(object):
 
     _allowed_types: list = [str, int, float, bool, list, dict, None]
 
@@ -96,8 +106,25 @@ class Parser(object):
             choices: Optional[Union[list, set, tuple]] = None,
             action: Optional[Callable] = None,
             description: Optional[str] = None,
-            default: Optional[Any] = None
+            default: Optional[Any] = None,
+            regex: Optional[str] = None
     ) -> None:
+        """ Add a parameter to the parser
+
+        Args:
+            name (required): The name of the expected parameter
+            type_: The type to convert the parameter to
+            dest: The destination attribute name attached to the NameSpace returned
+            required: True if the parameter is required, otherwise raises ParserRequiredParameterError
+            choices: A list, set or tuple of values which the parameter must be in, otherwise raises
+                     ParserInvalidChoiceError
+            action: A callable which will be applied to the parameter value
+            description: A description of the parameter
+            default: A default value for the parameter, defaults to None
+            regex: A regular expression string which the parameter value must match, otherwise the value is None
+        Returns:
+            None
+        """
 
         self._validate_add_param_opts(name, type_, dest, choices, action)
 
@@ -112,7 +139,8 @@ class Parser(object):
             choices=choices,
             action=action,
             description=description,
-            default=default
+            default=default,
+            regex=regex
         )
 
         if param.required:
@@ -120,15 +148,24 @@ class Parser(object):
 
         self._params.update({name: param})
 
-    def parse_params(self, data: dict, strict: Optional[bool] = False) -> NameSpace:
-        """ Parse a dict of parameters, returns a NameSpace object
+    def parse_params(self, data: Union[dict, str], strict: Optional[bool] = False) -> NameSpace:
+        """ Parse a dictionary or dictionary-like object of parameters, returning a NameSpace object
 
         Args:
-            data: A dict or dict-like object, raises ValueError if not correct type
-            strict: If an undefined parameter is received, raise ParserInvalidParameterError
+            data: A dict or dict-like object. Raises ParserInvalidDataTypeError if not correct type, can also be a
+                  JSON string as long as it can be decoded to a dict
+            strict: If an undefined parameter is received, raises a ParserInvalidParameterError, defaults to False
         Returns:
             NameSpace
         """
+
+        if isinstance(data, str):
+            try:
+                data = json.loads(data)
+            except JSONDecodeError:
+                raise ParserInvalidDataTypeError(
+                    "Invalid JSON string for param 'data'. Could not decode JSON to dict"
+                )
 
         if not issubclass(type(data), dict):
             raise ParserInvalidDataTypeError(data)
@@ -149,6 +186,12 @@ class Parser(object):
             if not value:
                 param.value = param.default
                 continue
+
+            if param.regex:
+                match = re.match(param.regex, str(value))
+                if not match:
+                    param.value = param.default
+                    continue
 
             if param.type_:
                 try:

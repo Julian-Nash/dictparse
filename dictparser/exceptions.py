@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 
 class ParserException(Exception):
@@ -45,6 +45,9 @@ class ParserInvalidParameterError(ParserException):
 
 class ParserInvalidDataTypeError(ParserException):
 
-    def __init__(self, data: Any):
+    def __init__(self, data: Any, msg: Optional[str] = None):
         self.data = data
-        super().__init__(f"Invalid type for 'data', must be a dict-like object, not '{type(self.data)}'")
+        if msg:
+            super().__init__(msg)
+        else:
+            super().__init__(f"Invalid type for 'data', must be a dict-like object, not '{type(self.data)}'")

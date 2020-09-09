@@ -2,7 +2,7 @@ from app.users import create_user
 
 from flask import Flask, request
 from respond import JSONResponse
-from requestparser import Parser
+from dictparser import DictionaryParser
 
 
 def create_app():
@@ -12,7 +12,7 @@ def create_app():
     @app.route("/", methods=["POST"])
     def post():
 
-        parser = Parser(description="Create a new user")
+        parser = DictionaryParser(description="Create a new user")
 
         parser.add_param("name", str, required=True)
         parser.add_param("age", int)
