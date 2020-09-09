@@ -1,5 +1,7 @@
 # dictparser
 
+![Python package](https://github.com/Julian-Nash/dictparse/workflows/Python%20package/badge.svg?branch=master)
+
 A simple, slim and useful, zero-dependency utility for parsing JSON strings, dictionaries or dictionary-like objects
  (think Flask's `request.form`, `request.json` or `request.get_json()`).
 
