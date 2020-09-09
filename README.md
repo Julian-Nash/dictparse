@@ -20,7 +20,7 @@ pip install dictparser
 Importing:
 
 ```py3
-from dictparser import DictinaryParser
+from dictparser import DictionaryParser
 ```
 
 Creating the parser:
