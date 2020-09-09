@@ -152,6 +152,13 @@ class TestParser(unittest.TestCase):
         params: NameSpace = parser.parse_params({"foo": "bar"})
         self.assertEqual(params.num, 2)
 
+    def test_param_default_is_none(self):
+
+        parser = DictionaryParser()
+        parser.add_param("name", str)
+        params: NameSpace = parser.parse_params({"foo": "bar"})
+        self.assertIs(params.name, None)
+
     def test_strict(self):
 
         parser = DictionaryParser()
