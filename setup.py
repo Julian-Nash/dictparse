@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dictparser",
-    version="0.2",
+    version="1.0",
     packages=setuptools.find_packages(),
     author="Julian Nash",
     author_email="julianjamesnash@gmail.com",
