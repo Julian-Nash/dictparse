@@ -1,10 +1,10 @@
 from dictparser import DictionaryParser, NameSpace, Param
 from dictparser.exceptions import (
+    ParserTypeError,
     ParserRequiredParameterError,
     ParserInvalidChoiceError,
     ParserInvalidParameterError,
     ParserDuplicateParameterError,
-    ParserInvalidDataTypeError
 )
 
 from functools import partial
@@ -12,6 +12,140 @@ import unittest
 
 
 class TestParser(unittest.TestCase):
+
+    def test_add_param_name_incorrect_type_for_name(self):
+        """ Raises a TypeError when name is an int """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(TypeError):
+            parser.add_param(name=1)
+
+    def test_add_param_name_illegal_name_get(self):
+        """ Raises a ValueError when dest contains an illegal char """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="get")
+
+    def test_add_param_name_illegal_name_containing_dunders(self):
+        """ Raises a ValueError when dest contains an illegal char """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="__str__")
+
+    def test_add_param_name_illegal_name_containing_keyword(self):
+        """ Raises a ValueError when dest contains an illegal char """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="def")
+
+    def test_add_param_name_illegal_name_get_param(self):
+        """ Raises a ValueError when dest contains an illegal char """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="get_param")
+
+    def test_add_param_name_illegal_name_to_dict(self):
+        """ Raises a ValueError when dest contains an illegal char """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="to_dict")
+
+    def test_add_param_name_illegal_string_int(self):
+        """ Raises a ValueError when name starts with an int """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="1foo")
+
+    def test_add_param_name_illegal_string_space(self):
+        """ Raises a ValueError when name starts with a space """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name=" foo")
+
+    def test_add_param_name_illegal_string_dot(self):
+        """ Raises a ValueError when name starts with a dot """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name=".foo")
+
+    def test_add_param_dest_incorrect_type_for_dest(self):
+        """ Raises a TypeError when dest is an int """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(TypeError):
+            parser.add_param(name="foo", dest=1)
+
+    def test_add_param_dest_illegal_string_int(self):
+        """ Raises a ValueError when dest starts with an int """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="foo", dest="1day")
+
+    def test_add_param_dest_illegal_string_space(self):
+        """ Raises a ValueError when dest starts with a space """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="foo", dest=" day")
+
+    def test_add_param_dest_illegal_string_dot(self):
+        """ Raises a ValueError when dest starts with a dot """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="foo", dest=".day")
+
+    def test_add_param_dest_illegal_string_char(self):
+        """ Raises a ValueError when dest contains an illegal char """
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(ValueError):
+            parser.add_param(name="foo", dest="foo%day")
+
+    def test_parser_type_error(self):
+
+        parser = DictionaryParser()
+        parser.add_param("name", int)
+
+        with self.assertRaises(ParserTypeError):
+            params: NameSpace = parser.parse_params({"name": "foo"})
+
+    def test_parser_choices_not_valid_type(self):
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(TypeError):
+            parser.add_param("name", int, choices="foo")
+
+    def test_parser_action_not_callable(self):
+
+        parser = DictionaryParser()
+
+        with self.assertRaises(TypeError):
+            parser.add_param("name", int, action="foo")
 
     def test_str_without_type(self):
 
@@ -180,7 +314,7 @@ class TestParser(unittest.TestCase):
         parser.add_param("num", int)
         parser.add_param("name", str)
 
-        with self.assertRaises(ParserInvalidDataTypeError):
+        with self.assertRaises(TypeError):
             params: NameSpace = parser.parse_params([1, 2, 3])
 
     def test_regex_match(self):
@@ -268,27 +402,12 @@ class TestParser(unittest.TestCase):
 
         self.assertEqual(params.name, "")
 
-    def test_parser_with_json_string_data(self):
-
-        parser = DictionaryParser()
-        parser.add_param("name", str, default="")
-        params: NameSpace = parser.parse_params('{"name": "foo"}')
-
-        self.assertEqual(params.name, "foo")
-
     def test_parser_with_string_data_not_dict(self):
 
         parser = DictionaryParser()
         parser.add_param("name", str)
-        with self.assertRaises(ParserInvalidDataTypeError):
+        with self.assertRaises(TypeError):
             params: NameSpace = parser.parse_params('["name", "foo"]')
-
-    def test_parser_invalid_json_string(self):
-        parser = DictionaryParser()
-        parser.add_param("name", str)
-        with self.assertRaises(ParserInvalidDataTypeError) as e:
-            params: NameSpace = parser.parse_params("('name', 'foo')")
-            self.assertEqual(str(e.exception), "Invalid JSON string for param 'data'. Could not decode JSON to dict")
 
 
 if __name__ == "__main__":

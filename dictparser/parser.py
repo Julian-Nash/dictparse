@@ -4,12 +4,10 @@ from .exceptions import (
     ParserRequiredParameterError,
     ParserInvalidParameterError,
     ParserDuplicateParameterError,
-    ParserInvalidDataTypeError
 )
 
-from typing import Optional, Collection, Callable, List, Any, Union, Dict
-from json.decoder import JSONDecodeError
-import json
+from typing import Optional, Callable, List, Any, Union, Dict
+import keyword
 import re
 
 
@@ -21,7 +19,7 @@ class Param(object):
             type_: Optional[type] = None,
             dest: Optional[str] = None,
             required: Optional[bool] = False,
-            choices: Optional[Collection] = None,
+            choices: Optional[Union[list, set, tuple]] = None,
             action: Optional[Callable] = None,
             description: Optional[str] = None,
             default: Optional[Any] = None,
@@ -66,7 +64,7 @@ class NameSpace(object):
         self._fields: List[str] = []
         self._params: Dict[str, Param] = {}
         for param in params:
-            self._fields.append(param.name)
+            self._fields.append(param.dest or param.name)
             self._params.update({param.dest or param.name: param})
             setattr(self, param.dest or param.name, param.value)
 
@@ -91,26 +89,47 @@ class DictionaryParser(object):
         self._required_keys: List[str] = []
         self._params: Dict[str, Param] = {}
 
+    def _is_valid_name(self, n: str) -> bool:
+        """ Test to see if the value for 'name' or 'dest' is allowed when calling add_param """
+
+        if n in ("get", "get_param", "to_dict"):
+            return False
+        elif n.startswith("__") and n.endswith("__"):
+            return False
+        elif keyword.iskeyword(n):
+            return False
+        elif not n.isidentifier():
+            return False
+        else:
+            return True
+
     def _validate_add_param_opts(
             self,
             name: str,
-            type_: Optional[type] = None,
             dest: Optional[str] = None,
             choices: Optional[Union[list, set, tuple]] = None,
             action: Optional[Callable] = None,
     ):
-        """ Validate params passed into add_param """
+        """ Validate params when calling add_param """
+
         if not isinstance(name, str):
             raise TypeError(f"Parameter 'name' must be of type 'str', not '{type(name)}'")
 
-        if type_ and not isinstance(type_, type):
-            raise TypeError(f"Parameter 'type_' must be a valid type, not '{type(type_)}'")
+        if not self._is_valid_name(name):
+            raise ValueError(
+                f"Invalid value '{name}' for parameter 'name'. Must comply with Python variable naming rules"
+            )
 
-        if dest and not isinstance(dest, str):
-            raise TypeError(f"Parameter 'dest' must be of type string, not '{type(dest)}'")
+        if dest:
+            if not isinstance(dest, str):
+                raise TypeError(f"Parameter 'dest' must be of type string, not '{type(dest)}'")
+            if not self._is_valid_name(dest):
+                raise ValueError(
+                    f"Invalid value '{dest}' for parameter 'dest'. Must comply with Python variable naming rules"
+                )
 
         if choices and not isinstance(choices, (list, tuple, set)):
-            raise TypeError("Parameter 'choices' must be of type 'list', 'tuple' or 'set'")
+            raise TypeError(f"Parameter 'choices' must be of type 'list', 'tuple' or 'set', not '{type(choices)}'")
 
         if action and not callable(action):
             raise TypeError("Parameter 'action' must be callable")
@@ -144,7 +163,7 @@ class DictionaryParser(object):
             None
         """
 
-        self._validate_add_param_opts(name, type_, dest, choices, action)
+        self._validate_add_param_opts(name, dest, choices, action)
 
         if name in self._params:
             raise ParserDuplicateParameterError(name)
@@ -166,27 +185,18 @@ class DictionaryParser(object):
 
         self._params.update({name: param})
 
-    def parse_params(self, data: Union[dict, str], strict: Optional[bool] = False) -> NameSpace:
+    def parse_params(self, data: dict, strict: Optional[bool] = False) -> NameSpace:
         """ Parse a dictionary or dictionary-like object of parameters, returning a NameSpace object
 
         Args:
-            data: A dict or dict-like object. Raises ParserInvalidDataTypeError if not correct type, can also be a
-                  JSON string as long as it can be decoded to a dict
+            data: A dict or dict-like object. Raises ParserInvalidDataTypeError if not a valid subclass of dict
             strict: If an undefined parameter is received, raises a ParserInvalidParameterError, defaults to False
         Returns:
             NameSpace
         """
 
-        if isinstance(data, str):
-            try:
-                data = json.loads(data)
-            except JSONDecodeError:
-                raise ParserInvalidDataTypeError(
-                    "Invalid JSON string for param 'data'. Could not decode JSON to dict"
-                )
-
         if not issubclass(type(data), dict):
-            raise ParserInvalidDataTypeError(data)
+            raise TypeError(f"Invalid type for 'data', must be a dict or dict-like object, not '{type(data)}'")
 
         for r in self._required_keys:
             if r not in data:
@@ -214,7 +224,7 @@ class DictionaryParser(object):
             if param.type_:
                 try:
                     value = param.type_(value)
-                except TypeError:
+                except ValueError:
                     raise ParserTypeError(name, value)
 
             if param.action:

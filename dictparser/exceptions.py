@@ -6,6 +6,7 @@ class ParserException(Exception):
 
 
 class ParserTypeError(ParserException):
+    """ Raised when a parameter cannot be parsed to the type defined in DictionaryParser.add_param    """
 
     def __init__(self, param: str, value: Any):
         self.param = param
@@ -14,6 +15,7 @@ class ParserTypeError(ParserException):
 
 
 class ParserDuplicateParameterError(ParserException):
+    """ Raised when a duplicate parameter name is added to DictionaryParser.add_param """
 
     def __init__(self, param: str):
         self.param = param
@@ -21,6 +23,7 @@ class ParserDuplicateParameterError(ParserException):
 
 
 class ParserRequiredParameterError(ParserException):
+    """ Raised when a required parameter is not found """
 
     def __init__(self, param: str):
         self.param = param
@@ -28,8 +31,9 @@ class ParserRequiredParameterError(ParserException):
 
 
 class ParserInvalidChoiceError(ParserException):
+    """ Raised when the parameter value is not in the list of choices added in DictionaryParser.add_param """
 
-    def __init__(self, param: str, value: Any, choices: Union[list, tuple, set]):
+    def __init__(self, param: str, value: Any, choices: Union[list, set, tuple]):
         self.param = param
         self.value = value
         self.choices = choices
@@ -37,17 +41,10 @@ class ParserInvalidChoiceError(ParserException):
 
 
 class ParserInvalidParameterError(ParserException):
+    """ Raised when the parser parses an undefined parameter. Only enforced when strict = True
+        in DictionaryParser.parse_params
+    """
 
     def __init__(self, param: str):
         self.param = param
         super().__init__(f"Unrecognised parameter '{self.param}'")
-
-
-class ParserInvalidDataTypeError(ParserException):
-
-    def __init__(self, data: Any, msg: Optional[str] = None):
-        self.data = data
-        if msg:
-            super().__init__(msg)
-        else:
-            super().__init__(f"Invalid type for 'data', must be a dict-like object, not '{type(self.data)}'")
