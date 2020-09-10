@@ -181,6 +181,25 @@ Returns a dictionary of the parsed parameters.
 {'one': 'one', 'two': 2, 'three': [1, 2, 3]}
 ```
 
+#### get_param
+
+Returns a `Param` object
+
+```pycon
+>>> from dictparser import DictionaryParser
+>>> parser = DictionaryParser()
+>>> parser.add_param("names", list, default=[])
+>>> params = parser.parse_params({"names": ["foo", "bar"]})
+>>> names = params.get_param("names")
+>>> names.name
+'names'
+>>> names.value
+['foo', 'bar']
+>>> names.default
+[]
+
+```
+
 ### Flask example
 
 An example of parsing JSON data sent in a POST request to a Flask route:
