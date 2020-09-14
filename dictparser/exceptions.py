@@ -3,7 +3,11 @@ from typing import Any, Union, Optional
 
 class ParserException(Exception):
 
-    def _get_type_str(self, v: Any, from_type: Optional[bool] = False) -> Union[str, None]:
+    def __init__(self, msg: str):
+        super().__init__(msg)
+
+    @staticmethod
+    def _get_type_str(v: Any, from_type: Optional[bool] = False) -> Union[str, None]:
         m: dict = {
             str: "str",
             int: "int",
@@ -21,7 +25,7 @@ class ParserException(Exception):
 
 
 class ParserTypeError(ParserException):
-    """ Raised when a parameter cannot be parsed to the type defined in DictionaryParser.add_param    """
+    """ Raised when a key cannot be converted to the type defined in DictionaryParser.add_param    """
 
     def __init__(self, param: str, value: Any, expected: Optional[type] = None):
         self.param = param
@@ -38,16 +42,16 @@ class ParserTypeError(ParserException):
             )
 
 
-class ParserDuplicateParameterError(ParserException):
-    """ Raised when a duplicate parameter name is added to DictionaryParser.add_param """
+class ParserDuplicateKeyError(ParserException):
+    """ Raised when a duplicate key name is added to DictionaryParser.add_param """
 
     def __init__(self, param: str):
         self.param = param
         super().__init__(f"Duplicate parameter '{self.param}'")
 
 
-class ParserRequiredParameterError(ParserException):
-    """ Raised when a required parameter is not found """
+class ParserRequiredKeyError(ParserException):
+    """ Raised when a required key is not found """
 
     def __init__(self, param: str):
         self.param = param
@@ -55,7 +59,7 @@ class ParserRequiredParameterError(ParserException):
 
 
 class ParserInvalidChoiceError(ParserException):
-    """ Raised when the parameter value is not in the list of choices added in DictionaryParser.add_param """
+    """ Raised when the key value is not in the list of choices added in DictionaryParser.add_param """
 
     def __init__(self, param: str, value: Any, choices: Union[list, set, tuple]):
         self.param = param
@@ -64,8 +68,8 @@ class ParserInvalidChoiceError(ParserException):
         super().__init__(f"Parameter '{self.param}' must be one of '{list(choices)}', not '{self.value}'")
 
 
-class ParserInvalidParameterError(ParserException):
-    """ Raised when the parser parses an undefined parameter. Only enforced when strict = True
+class ParserInvalidKeyError(ParserException):
+    """ Raised when the parser parses an undefined key. Only enforced when strict = True
         in DictionaryParser.parse_params
     """
 

@@ -1,9 +1,9 @@
 from .exceptions import (
     ParserTypeError,
     ParserInvalidChoiceError,
-    ParserRequiredParameterError,
-    ParserInvalidParameterError,
-    ParserDuplicateParameterError,
+    ParserRequiredKeyError,
+    ParserInvalidKeyError,
+    ParserDuplicateKeyError,
     ParserInvalidDataTypeError
 )
 
@@ -142,7 +142,7 @@ class DictionaryParser(object):
         if action and not callable(action):
             raise TypeError("Parameter 'action' must be callable")
 
-    def add_param(
+    def add_key(
             self,
             name: str,
             type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
@@ -174,7 +174,7 @@ class DictionaryParser(object):
         self._validate_add_param_opts(name, type_, dest, choices, action)
 
         if name in self._params:
-            raise ParserDuplicateParameterError(name)
+            raise ParserDuplicateKeyError(name)
 
         param: Param = Param(
             name,
@@ -193,7 +193,7 @@ class DictionaryParser(object):
 
         self._params.update({name: param})
 
-    def parse_params(
+    def parse_dict(
             self,
             data: Dict[str, Any],
             strict: Optional[bool] = False,
@@ -217,12 +217,12 @@ class DictionaryParser(object):
 
         for r in self._required_keys:
             if r not in data:
-                raise ParserRequiredParameterError(r)
+                raise ParserRequiredKeyError(r)
 
         if strict:
             for k in data.keys():
                 if k not in self._params.keys():
-                    raise ParserInvalidParameterError(k)
+                    raise ParserInvalidKeyError(k)
 
         for name, param in self._params.items():
 

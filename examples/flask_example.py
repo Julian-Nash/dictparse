@@ -14,15 +14,15 @@ def create_app():
 
         parser = DictionaryParser(description="Create a new user")
 
-        parser.add_param("name", str, required=True)
-        parser.add_param("age", int)
-        parser.add_param("password", str, required=True, action=lambda x: x.encode("utf-8"))
-        parser.add_param("interests", list, action=lambda x: [i.strip() for i in x])
-        parser.add_param("level", float, default=1.5)
-        parser.add_param("stage", str, choices=["alpha", "beta"])
+        parser.add_key("name", str, required=True)
+        parser.add_key("age", int)
+        parser.add_key("password", str, required=True, action=lambda x: x.encode("utf-8"))
+        parser.add_key("interests", list, action=lambda x: [i.strip() for i in x])
+        parser.add_key("level", float, default=1.5)
+        parser.add_key("stage", str, choices=["alpha", "beta"])
 
         try:
-            params = parser.parse_params(request.get_json())
+            params = parser.parse_dict(request.get_json())
         except Exception as e:
             return JSONResponse.bad_request(str(e))
 
