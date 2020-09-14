@@ -268,7 +268,10 @@ Exceptions will be raised in the following scenarios:
 
 Raised when a parameter cannot be parsed to the type declared in `add_param`
 
-```pycon
+```py3
+from dictparser import DictionaryParser
+from dictparser.exceptions import ParserTypeError
+
 parser = DictionaryParser()
 parser.add_param("age", int)
 
