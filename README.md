@@ -100,12 +100,14 @@ in the data to be parsed. This returns a `NameSpace` object.
 DictionaryParser.parse_params(
     self, 
     data: Union[dict, str], 
-    strict: Optional[bool] = False
+    strict: Optional[bool] = False,
+    action: Optional[Callable] = None
 ) -> NameSpace:
 ```
 
 - `data`: A dictionary, dictionary-like object or a valid JSON string that can be decoded to a dictionary
 - `strict`: If `True`, raises an exception if any parameters not added to the parser are received
+- `action`: A function to apply to all parameters (after any type conversion and after action passed to `add_param`)
 
 ### The `NameSpace` object
 
