@@ -6,7 +6,7 @@ from .exceptions import (
     ParserDuplicateParameterError,
 )
 
-from typing import Optional, Callable, List, Any, Union, Dict
+from typing import Optional, Callable, List, Any, Union, Dict, Type
 import keyword
 import re
 
@@ -16,7 +16,7 @@ class Param(object):
     def __init__(
             self,
             name: str,
-            type_: Optional[type] = None,
+            type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
             dest: Optional[str] = None,
             required: Optional[bool] = False,
             choices: Optional[Union[list, set, tuple]] = None,
@@ -108,7 +108,7 @@ class DictionaryParser(object):
     def _validate_add_param_opts(
             self,
             name: str,
-            type_: Optional[Union[str, int, float, bool, list, tuple, set, dict]],
+            type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]],
             dest: Optional[str] = None,
             choices: Optional[Union[list, set, tuple]] = None,
             action: Optional[Callable] = None,
@@ -143,7 +143,7 @@ class DictionaryParser(object):
     def add_param(
             self,
             name: str,
-            type_: Optional[type] = None,
+            type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
             dest: Optional[str] = None,
             required: Optional[bool] = False,
             choices: Optional[Union[list, set, tuple]] = None,
@@ -191,7 +191,12 @@ class DictionaryParser(object):
 
         self._params.update({name: param})
 
-    def parse_params(self, data: dict, strict: Optional[bool] = False, action: Optional[Callable] = None) -> NameSpace:
+    def parse_params(
+            self,
+            data: Dict[str, Any],
+            strict: Optional[bool] = False,
+            action: Optional[Callable] = None
+    ) -> NameSpace:
         """ Parse a dictionary or dictionary-like object of parameters, returning a NameSpace object
 
         Args:

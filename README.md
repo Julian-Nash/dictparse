@@ -9,7 +9,7 @@ It's particularly useful for parsing incoming request data in REST APIs & web ap
 `request.json`.
  
 The `dictparser` design takes inspiration from Python's own `argparse` library, similar to the `ArgumentParser` class
-, taking input as a dictionary or dictionary-like object, enforcing rules, types, actions, default values and
+, taking input as a dictionary or dictionary-like object, enforcing rules, types, applying functions, default values and
  returning a `NameSpace`, with values mapped to attributes.
  
 ### Installation
@@ -70,7 +70,7 @@ If the parser does not find a value matching the name, the default value is `Non
 DictionaryParser.add_param(
     self,
     name: str,
-    type_: Optional[type] = None,
+    type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
     dest: Optional[str] = None,
     required: Optional[bool] = False,
     choices: Optional[Union[list, set, tuple]] = None,
@@ -99,8 +99,8 @@ in the data to be parsed. This returns a `NameSpace` object.
 ```py3
 DictionaryParser.parse_params(
     self, 
-    data: Union[dict, str], 
-    strict: Optional[bool] = False,
+    data: Dict[str, Any], 
+    strict: Optional[bool] = False, 
     action: Optional[Callable] = None
 ) -> NameSpace:
 ```
