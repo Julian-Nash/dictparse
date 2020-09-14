@@ -68,7 +68,6 @@ If the parser does not find a value matching the name, the default value is `Non
 
 ```py3
 DictionaryParser.add_param(
-    self,
     name: str,
     type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
     dest: Optional[str] = None,
@@ -102,7 +101,6 @@ in the data to be parsed. This returns a `NameSpace` object.
 
 ```py3
 DictionaryParser.parse_dict(
-    self, 
     data: Dict[str, Any], 
     strict: Optional[bool] = False, 
     action: Optional[Callable] = None
@@ -154,7 +152,6 @@ The `NameSpace` object has the following available methods:
 
 ```py3
 NameSpace.get(
-    self, 
     name: str, 
     default: Optional[Any] = None
 ) -> Union[None, Any]:
@@ -175,7 +172,7 @@ None
 #### to_dict
 
 ```py3
-NameSpace.to_dict(self) -> dict
+NameSpace.to_dict() -> dict
 ```
 
 Returns a dictionary of the parsed parameters.
