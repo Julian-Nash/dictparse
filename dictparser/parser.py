@@ -4,6 +4,7 @@ from .exceptions import (
     ParserRequiredParameterError,
     ParserInvalidParameterError,
     ParserDuplicateParameterError,
+    ParserInvalidDataTypeError
 )
 
 from typing import Optional, Callable, List, Any, Union, Dict, Type
@@ -208,7 +209,7 @@ class DictionaryParser(object):
         """
 
         if not issubclass(type(data), dict):
-            raise TypeError(f"Invalid type for 'data', must be a dict or dict-like object, not '{type(data)}'")
+            raise ParserInvalidDataTypeError(data)
 
         if action and not callable(action):
             raise TypeError(f"Invalid value for 'map_', must be callable, not '{action}'")

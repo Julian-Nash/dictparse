@@ -72,3 +72,12 @@ class ParserInvalidParameterError(ParserException):
     def __init__(self, param: str):
         self.param = param
         super().__init__(f"Invalid parameter '{self.param}'")
+
+
+class ParserInvalidDataTypeError(ParserException, TypeError):
+    """ Raised when `parse_params` is not given a dict or dict-like object for `data` """
+
+    def __init__(self, data: Any):
+        self.param = data
+        super().__init__(f"Invalid type for 'data', must be a dict or dict-like object, not "
+                         f"'{self._get_type_str(data)}'")

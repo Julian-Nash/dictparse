@@ -353,3 +353,26 @@ except ParserInvalidParameterError as e:
 ```
 
 `ParserInvalidParameterError` has a single attribute `param`, the name of the parameter (str)
+
+### Other runtime considerations for `parse_params`
+
+If an invalid data type for `data` is passed to `parse_params` (such as a list or string), it raises a 
+`ParserInvalidDataTypeError`
+
+```py3
+from dictparser import DictionaryParser
+from dictparser.exceptions import ParserInvalidDataTypeError
+
+parser = DictionaryParser()
+parser.add_param("name", str)
+
+try:
+    params = parser.parse_params([{"name", "John Doe"}])
+except ParserInvalidDataTypeError as e:
+    print(e)  # Invalid type for 'data', must be a dict or dict-like object, not 'list'
+
+try:
+    params = parser.parse_params("foo")
+except ParserInvalidDataTypeError as e:
+    print(e)  # Invalid type for 'data', must be a dict or dict-like object, not 'str'
+```

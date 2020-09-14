@@ -5,6 +5,7 @@ from dictparser.exceptions import (
     ParserInvalidChoiceError,
     ParserInvalidParameterError,
     ParserDuplicateParameterError,
+    ParserInvalidDataTypeError
 )
 
 from functools import partial
@@ -449,6 +450,22 @@ class TestParser(unittest.TestCase):
         parser.add_param("foo", str)
         params = parser.parse_params({"foo": None}, action=lambda x: x.upper())
         self.assertEqual(params.foo, None)
+
+    def test_parse_params_raises_exception_with_list(self):
+
+        parser = DictionaryParser()
+        parser.add_param("foo", str)
+
+        with self.assertRaises(ParserInvalidDataTypeError):
+            params = parser.parse_params([1, 2, 3])
+
+    def test_parse_params_raises_exception_with_str(self):
+
+        parser = DictionaryParser()
+        parser.add_param("foo", str)
+
+        with self.assertRaises(ParserInvalidDataTypeError):
+            params = parser.parse_params("foo")
 
 
 if __name__ == "__main__":
