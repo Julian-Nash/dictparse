@@ -89,7 +89,7 @@ DictionaryParser.add_param(
 - `action`: A function to apply to the value (Applied after any type conversion)
 - `description`: A description of the parameter
 - `default`: A default value for the parameter if not found
-- `regex`: A regular expression to match against
+- `regex`: A regular expression to match against (Sets the parameter to `None` if the match is negative)
 
 > Note - The `name` and `dest` parameters must comply with standard Python variable naming conventions (only start
 > with a letter or underscore & only contain alpha-numeric characters), not be a Python keyword and not start and end
