@@ -185,18 +185,22 @@ class DictionaryParser(object):
 
         self._params.update({name: param})
 
-    def parse_params(self, data: dict, strict: Optional[bool] = False) -> NameSpace:
+    def parse_params(self, data: dict, strict: Optional[bool] = False, action: Optional[Callable] = None) -> NameSpace:
         """ Parse a dictionary or dictionary-like object of parameters, returning a NameSpace object
 
         Args:
             data: A dict or dict-like object. Raises ParserInvalidDataTypeError if not a valid subclass of dict
             strict: If an undefined parameter is received, raises a ParserInvalidParameterError, defaults to False
+            action: A function to apply to all values (applied after type conversion)
         Returns:
             NameSpace
         """
 
         if not issubclass(type(data), dict):
             raise TypeError(f"Invalid type for 'data', must be a dict or dict-like object, not '{type(data)}'")
+
+        if action and not callable(action):
+            raise TypeError(f"Invalid value for 'map_', must be callable, not '{action}'")
 
         for r in self._required_keys:
             if r not in data:
@@ -232,6 +236,9 @@ class DictionaryParser(object):
 
             if param.choices and value not in param.choices:
                 raise ParserInvalidChoiceError(name, value, param.choices)
+
+            if action:
+                value = action(value)
 
             param.value = value
 

@@ -409,6 +409,38 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(TypeError):
             params: NameSpace = parser.parse_params('["name", "foo"]')
 
+    def test_parser_action(self):
+
+        parser = DictionaryParser()
+        parser.add_param("foo", str)
+        parser.add_param("bar", str)
+        parser.add_param("baz", str)
+        params = parser.parse_params({"foo": "foo", "bar": "bar", "baz": "baz"}, action=lambda x: x.upper())
+        self.assertEqual(params.foo, "FOO")
+        self.assertEqual(params.bar, "BAR")
+        self.assertEqual(params.baz, "BAZ")
+
+    def test_parser_action_int(self):
+
+        def square(x):
+            return x ** 2
+
+        parser = DictionaryParser()
+        parser.add_param("foo", int)
+        parser.add_param("bar", int)
+        parser.add_param("baz", int)
+        params = parser.parse_params({"foo": 1, "bar": 2, "baz": 3}, action=square)
+        self.assertEqual(params.foo, 1)
+        self.assertEqual(params.bar, 4)
+        self.assertEqual(params.baz, 9)
+
+    def test_parser_action_with_none(self):
+
+        parser = DictionaryParser()
+        parser.add_param("foo", str)
+        params = parser.parse_params({"foo": None}, action=lambda x: x.upper())
+        self.assertEqual(params.foo, None)
+
 
 if __name__ == "__main__":
     unittest.main()
