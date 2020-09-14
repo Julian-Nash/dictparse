@@ -92,7 +92,8 @@ class DictionaryParser(object):
         self._required_keys: List[str] = []
         self._params: Dict[str, Param] = {}
 
-    def _is_valid_name(self, n: str) -> bool:
+    @staticmethod
+    def _is_valid_name(n: str) -> bool:
         """ Test to see if the value for 'name' or 'dest' is allowed when calling add_param """
 
         if n in ("get", "get_param", "to_dict"):

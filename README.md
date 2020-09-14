@@ -81,15 +81,19 @@ DictionaryParser.add_param(
 ) -> None
 ```
 
-- `name`: The parameter name (required)
+- `name`: The parameter name (required - See note below)
 - `type_`: The common parameter type (The parser will attempt to convert the parameter value to the given type)
-- `dest`: The destination name of the parameter
+- `dest`: The destination name of the parameter (See note below)
 - `required`: If `True`, enforce a value for the parameter must exists
 - `choices`: A list, set, or tuple of possible choices
 - `action`: A function to apply to the value (Applied after any type conversion)
 - `description`: A description of the parameter
 - `default`: A default value for the parameter if not found
 - `regex`: A regular expression to match against
+
+> Note - The `name` and `dest` parameters must comply with standard Python variable naming conventions (only start
+> with a letter or underscore & only contain alpha-numeric characters), not be a Python keyword and not start and end
+> with a double underscore (dunder)
 
 ### Parsing the data
 
