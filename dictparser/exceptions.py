@@ -47,7 +47,7 @@ class ParserDuplicateKeyError(ParserException):
 
     def __init__(self, param: str):
         self.param = param
-        super().__init__(f"Duplicate parameter '{self.param}'")
+        super().__init__(f"Duplicate key '{self.param}'")
 
 
 class ParserRequiredKeyError(ParserException):

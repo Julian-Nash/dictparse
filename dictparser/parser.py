@@ -107,7 +107,7 @@ class DictionaryParser(object):
         else:
             return True
 
-    def _validate_add_param_opts(
+    def _validate_add_key_params(
             self,
             name: str,
             type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]],
@@ -154,7 +154,7 @@ class DictionaryParser(object):
             default: Optional[Any] = None,
             regex: Optional[str] = None
     ) -> None:
-        """ Add a parameter to the parser
+        """ Add a key to the parser
 
         Args:
             name (required): The name of the expected parameter
@@ -171,7 +171,7 @@ class DictionaryParser(object):
             None
         """
 
-        self._validate_add_param_opts(name, type_, dest, choices, action)
+        self._validate_add_key_params(name, type_, dest, choices, action)
 
         if name in self._params:
             raise ParserDuplicateKeyError(name)
@@ -199,11 +199,11 @@ class DictionaryParser(object):
             strict: Optional[bool] = False,
             action: Optional[Callable] = None
     ) -> NameSpace:
-        """ Parse a dictionary or dictionary-like object of parameters, returning a NameSpace object
+        """ Parse a dictionary or dictionary-like object, returning a NameSpace object
 
         Args:
             data: A dict or dict-like object. Raises ParserInvalidDataTypeError if not a valid subclass of dict
-            strict: If an undefined parameter is received, raises a ParserInvalidParameterError, defaults to False
+            strict: If a key not added to the parser is received, raises a ParserInvalidParameterError, defaults to False
             action: A function to apply to all values (applied after type conversion)
         Returns:
             NameSpace
