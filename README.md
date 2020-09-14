@@ -20,7 +20,7 @@ pip install dictparser
 
 ### Example
 
-The following code is a Python program that takes takes some data in the form of a dictionary:
+The following code is a Python program that takes takes some data in the form of a dictionary and parses it:
 
 ```pycon
 >>> from dictparser import DictionaryParser
@@ -86,7 +86,7 @@ DictionaryParser.add_param(
 - `dest`: The destination name of the parameter
 - `required`: If `True`, enforce a value for the parameter must exists
 - `choices`: A list, set, or tuple of possible choices
-- `action`: A callable to apply to the value (Applied after any type conversion)
+- `action`: A function to apply to the value (Applied after any type conversion)
 - `description`: A description of the parameter
 - `default`: A default value for the parameter if not found
 - `regex`: A regular expression to match against
@@ -257,3 +257,96 @@ if __name__ == "__main__":
     app.run()
 
 ```
+
+### Exception handling
+
+Exceptions will be raised in the following scenarios:
+
+#### `parse_params`
+
+##### `ParserTypeError`
+
+Raised when a parameter cannot be parsed to the type declared in `add_param`
+
+```pycon
+parser = DictionaryParser()
+parser.add_param("age", int)
+
+try:
+    params = parser.parse_params({"age": "thirty"})
+except ParserTypeError as e:
+    print(e)  # Invalid value 'thirty' for parameter 'age', expected 'int' not 'str'
+```
+
+`ParserTypeError` contains the following attributes:
+
+- `param`: The parameter name (`str`)
+- `value`: The parameter value (`Any`)
+- `expected`: The expected type (`type`)
+
+##### `ParserRequiredParameterError`
+
+Raised when a parameter is required but not found
+
+```py3
+from dictparser import DictionaryParser
+from dictparser.exceptions import ParserRequiredParameterError
+
+parser = DictionaryParser()
+parser.add_param("name", str)
+parser.add_param("email", str, required=True)
+
+try:
+    params = parser.parse_params({"name": "John Doe"})
+except ParserRequiredParameterError as e:
+    print(e)  # Missing required parameter 'email'
+```
+
+- `ParserRequiredParameterError` has a single attribute `param`, the name of the parameter (str)
+
+##### `ParserInvalidChoiceError`
+
+Raised when the value is not defined in the `choices` parameter of `add_param`
+
+```py3
+from dictparser import DictionaryParser
+from dictparser.exceptions import ParserInvalidChoiceError
+
+parser = DictionaryParser()
+parser.add_param("name", str)
+parser.add_param("language", str, choices=["python", "bash"])
+
+try:
+    params = parser.parse_params({"name": "John Doe", "language": "javascript"})
+except ParserInvalidChoiceError as e:
+    print(e)  # Parameter 'language' must be one of '['python', 'bash']', not 'javascript'
+```
+
+`ParserInvalidChoiceError` has the following 3 attributes:
+
+- `param`: The parameter name (str)
+- `value`: The parameter value (Any)
+- `choices`: The available choices added via `add_param` (list|set|tuple)
+
+
+##### `ParserInvalidParameterError`
+
+Raised when `strict` is set to `True` in `parse_params`
+
+The `strict` parameter enforces the parser to only accept parameters that have been added to the parser
+
+```py3
+from dictparser import DictionaryParser
+from dictparser.exceptions import ParserInvalidParameterError
+
+parser = DictionaryParser()
+parser.add_param("name", str)
+parser.add_param("language", str, choices=["python", "bash"])
+
+try:
+    params = parser.parse_params({"name": "John Doe", "language": "python", "email": "jdoe@gmail.com"}, strict=True)
+except ParserInvalidParameterError as e:
+    print(e)  # Invalid parameter 'email'
+```
+
+`ParserInvalidParameterError` has a single attribute `param`, the name of the parameter (str)

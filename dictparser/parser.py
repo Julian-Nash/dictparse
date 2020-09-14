@@ -84,6 +84,8 @@ class NameSpace(object):
 class DictionaryParser(object):
     """ Dictionary parser class """
 
+    _valid_types: List[type] = [str, int, float, bool, list, tuple, set, dict]
+
     def __init__(self, description: Optional[str] = None):
         self.description = description
         self._required_keys: List[str] = []
@@ -106,6 +108,7 @@ class DictionaryParser(object):
     def _validate_add_param_opts(
             self,
             name: str,
+            type_: Optional[Union[str, int, float, bool, list, tuple, set, dict]],
             dest: Optional[str] = None,
             choices: Optional[Union[list, set, tuple]] = None,
             action: Optional[Callable] = None,
@@ -119,6 +122,9 @@ class DictionaryParser(object):
             raise ValueError(
                 f"Invalid value '{name}' for parameter 'name'. Must comply with Python variable naming rules"
             )
+
+        if type_ and type_ not in self._valid_types:
+            raise TypeError(f"Parameter 'type_' must be one of '{self._valid_types}', not '{type_}'")
 
         if dest:
             if not isinstance(dest, str):
@@ -150,7 +156,7 @@ class DictionaryParser(object):
 
         Args:
             name (required): The name of the expected parameter
-            type_: The type to convert the parameter to
+            type_: The common Python type to convert the parameter to (str, int, float, bool, list, tuple, set, dict)
             dest: The destination attribute name attached to the NameSpace returned
             required: True if the parameter is required, otherwise raises ParserRequiredParameterError
             choices: A list, set or tuple of values which the parameter must be in, otherwise raises
@@ -163,7 +169,7 @@ class DictionaryParser(object):
             None
         """
 
-        self._validate_add_param_opts(name, dest, choices, action)
+        self._validate_add_param_opts(name, type_, dest, choices, action)
 
         if name in self._params:
             raise ParserDuplicateParameterError(name)
@@ -229,7 +235,7 @@ class DictionaryParser(object):
                 try:
                     value = param.type_(value)
                 except ValueError:
-                    raise ParserTypeError(name, value)
+                    raise ParserTypeError(name, value, param.type_)
 
             if param.action:
                 value = param.action(value)

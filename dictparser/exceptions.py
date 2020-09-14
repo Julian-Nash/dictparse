@@ -2,16 +2,40 @@ from typing import Any, Union, Optional
 
 
 class ParserException(Exception):
-    ...
+
+    def _get_type_str(self, v: Any, from_type: Optional[bool] = False) -> Union[str, None]:
+        m: dict = {
+            str: "str",
+            int: "int",
+            float: "float",
+            bool: "bool",
+            list: "list",
+            tuple: "list",
+            set: "list",
+            dict: "dict",
+        }
+        if from_type:
+            return m.get(v, None)
+        else:
+            return m.get(type(v))
 
 
 class ParserTypeError(ParserException):
     """ Raised when a parameter cannot be parsed to the type defined in DictionaryParser.add_param    """
 
-    def __init__(self, param: str, value: Any):
+    def __init__(self, param: str, value: Any, expected: Optional[type] = None):
         self.param = param
         self.value = value
-        super().__init__(f"Invalid type '{type(self.value)}' for param '{self.param}'")
+        if expected:
+            super().__init__(
+                f"Invalid value '{self.value}' for parameter '{self.param}', expected "
+                f"'{self._get_type_str(expected, from_type=True)}' not '{self._get_type_str(self.value)}'"
+            )
+        else:
+            super().__init__(
+                f"Invalid value '{self.value}' for parameter '{self.param}', expected"
+                f" '{self._get_type_str(type(self.value))}'"
+            )
 
 
 class ParserDuplicateParameterError(ParserException):
@@ -47,4 +71,4 @@ class ParserInvalidParameterError(ParserException):
 
     def __init__(self, param: str):
         self.param = param
-        super().__init__(f"Unrecognised parameter '{self.param}'")
+        super().__init__(f"Invalid parameter '{self.param}'")

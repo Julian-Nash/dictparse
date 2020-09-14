@@ -277,7 +277,16 @@ class TestParser(unittest.TestCase):
         parser = DictionaryParser()
         parser.add_param("nums", tuple)
         params: NameSpace = parser.parse_params({"nums": [1, 2, 3]})
+        self.assertIsInstance(params.nums, tuple)
         self.assertEqual(params.nums, (1, 2, 3))
+
+    def test_list_to_set(self):
+
+        parser = DictionaryParser()
+        parser.add_param("nums", set)
+        params: NameSpace = parser.parse_params({"nums": [1, 2, 3, 3, 3]})
+        self.assertIsInstance(params.nums, set)
+        self.assertEqual(params.nums, {1, 2, 3})
 
     def test_default(self):
 
