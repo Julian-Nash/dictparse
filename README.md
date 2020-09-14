@@ -4,8 +4,9 @@
 
 A simple, slim and useful, zero-dependency utility for parsing dictionaries or dictionary-like objects.
 
-It's particularly useful for parsing incoming request data, for example in the case of Flask, parsing form data
- from `request.form`, query string arguments from`request.args` or JSON data from `request.json`.
+It's particularly useful for parsing incoming request data in REST APIs & web applications, for example in the case
+ of Flask, parsing form data from `request.form`, query string arguments from`request.args` or JSON data from 
+`request.json`.
  
 The `dictparser` design takes inspiration from Python's own `argparse` library, similar to the `ArgumentParser` class
 , taking input as a dictionary or dictionary-like object, enforcing rules, types, actions, default values and
