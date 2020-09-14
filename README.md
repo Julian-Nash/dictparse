@@ -25,7 +25,7 @@ The following code is a Python program that takes takes some data in the form of
 ```pycon
 >>> from dictparser import DictionaryParser
 >>> parser = DictionaryParser()
->>> parser.add_key("name", str, required=True)
+>>> parser.add_param("name", str, required=True)
 >>> params = parser.parse_dict({"name": "FooBar"})
 >>> params.name
 'FooBar'
@@ -42,15 +42,15 @@ The first step is to create the DictionaryParser object
 
 ### Adding parameters
 
-Adding parameters to the parser is done by making calls to the `add_key` method. These calls tell the
+Adding parameters to the parser is done by making calls to the `add_param` method. These calls tell the
  `DictionaryParser` how to handle the values passed in and turn them into the desired output, enforcing rules
- , changing types and transforming values based on the arguments passed to the `add_key` method.
+ , changing types and transforming values based on the arguments passed to the `add_param` method.
  
 ```pycon
 >>> parser = DictionaryParser()
->>> parser.add_key("name", str, required=True)
->>> parser.add_key("language", str, choices=["python", "javascript", "rust"])
->>> parser.add_key("tags", str, action=lambda x: x.split(","))
+>>> parser.add_param("name", str, required=True)
+>>> parser.add_param("language", str, choices=["python", "javascript", "rust"])
+>>> parser.add_param("tags", str, action=lambda x: x.split(","))
 >>> params = parser.parse_dict({"name": "FooBar", "language": "python", "tags": "foo,bar,baz"})
 >>> params.name
 'FooBar'
@@ -64,10 +64,10 @@ Adding parameters to the parser is done by making calls to the `add_key` method.
 
 If the parser does not find a value matching the name, the default value is `None`
 
-### Arguments available for `add_key`
+### Arguments available for `add_param`
 
 ```py3
-DictionaryParser.add_key(
+DictionaryParser.add_param(
     self,
     name: str,
     type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
@@ -111,7 +111,7 @@ DictionaryParser.parse_dict(
 
 - `data`: A dictionary, dictionary-like object or a valid JSON string that can be decoded to a dictionary
 - `strict`: If `True`, raises an exception if any parameters not added to the parser are received
-- `action`: A function to apply to all parameters (after any type conversion and after action passed to `add_key`)
+- `action`: A function to apply to all parameters (after any type conversion and after action passed to `add_param`)
 
 ### The `NameSpace` object
 
@@ -122,7 +122,7 @@ Parameters can be accessed as attributes of the `NameSpace`, simply using dot no
 
 ```pycon
 >>> parser = DictionaryParser()
->>> parser.add_key("age", int, required=True)
+>>> parser.add_param("age", int, required=True)
 >>> params = parser.parse_dict({"age": 30})
 >>> params.age
 30
@@ -137,12 +137,12 @@ Traceback (most recent call last):
 AttributeError: 'NameSpace' object has no attribute 'foo'
 ```
 
-if the `dest` parameter is supplied when adding a parameter in `add_key`, the value can only be accessed by using the
+if the `dest` parameter is supplied when adding a parameter in `add_param`, the value can only be accessed by using the
 `dest` value:
 
 ```pycon
 >>> parser = DictionaryParser()
->>> parser.add_key("bar", str, dest="foo")
+>>> parser.add_param("bar", str, dest="foo")
 >>> params = parser.parse_dict({"bar": "bar"})
 >>> params.foo
 'bar'
@@ -165,8 +165,8 @@ Calling the `get` method on the `NameSpace` works in the same way as calling `ge
  
 ```pycon
 >>> parser = DictionaryParser()
->>> parser.add_key("age", int, required=True)
->>> parser.add_key("weight", int)
+>>> parser.add_param("age", int, required=True)
+>>> parser.add_param("weight", int)
 >>> params = parser.parse_dict({"age": 30, "height": 1.9})
 >>> params.weight
 None
@@ -182,9 +182,9 @@ Returns a dictionary of the parsed parameters.
 
 ```pycon
 >>> parser = DictionaryParser()
->>> parser.add_key("one", str)
->>> parser.add_key("two", int)
->>> parser.add_key("three", list)
+>>> parser.add_param("one", str)
+>>> parser.add_param("two", int)
+>>> parser.add_param("three", list)
 >>> params = parser.parse_dict({"one": "one", "two": 2, "three": [1, 2, 3]})
 >>> params.to_dict()
 {'one': 'one', 'two': 2, 'three': [1, 2, 3]}
@@ -197,7 +197,7 @@ Returns a `Param` object
 ```pycon
 >>> from dictparser import DictionaryParser
 >>> parser = DictionaryParser()
->>> parser.add_key("names", list, default=[])
+>>> parser.add_param("names", list, default=[])
 >>> params = parser.parse_dict({"names": ["foo", "bar"]})
 >>> names = params.get_param("names")
 >>> names.name
@@ -230,12 +230,12 @@ def create_app():
 
         parser = DictionaryParser(description="Create a new user")
 
-        parser.add_key("name", str, required=True)
-        parser.add_key("age", int)
-        parser.add_key("password", str, required=True, action=lambda x: x.encode("utf-8"))
-        parser.add_key("interests", list, action=lambda x: [i.strip() for i in x])
-        parser.add_key("level", float, default=1.5)
-        parser.add_key("stage", str, choices=["alpha", "beta"])
+        parser.add_param("name", str, required=True)
+        parser.add_param("age", int)
+        parser.add_param("password", str, required=True, action=lambda x: x.encode("utf-8"))
+        parser.add_param("interests", list, action=lambda x: [i.strip() for i in x])
+        parser.add_param("level", float, default=1.5)
+        parser.add_param("stage", str, choices=["alpha", "beta"])
 
         try:
             params = parser.parse_dict(request.get_json())
@@ -270,14 +270,14 @@ Exceptions will be raised in the following scenarios:
 
 ##### `ParserTypeError`
 
-Raised when a parameter cannot be parsed to the type declared in `add_key`
+Raised when a parameter cannot be parsed to the type declared in `add_param`
 
 ```py3
 from dictparser import DictionaryParser
 from dictparser.exceptions import ParserTypeError
 
 parser = DictionaryParser()
-parser.add_key("age", int)
+parser.add_param("age", int)
 
 try:
     params = parser.parse_dict({"age": "thirty"})
@@ -300,8 +300,8 @@ from dictparser import DictionaryParser
 from dictparser.exceptions import ParserRequiredParameterError
 
 parser = DictionaryParser()
-parser.add_key("name", str)
-parser.add_key("email", str, required=True)
+parser.add_param("name", str)
+parser.add_param("email", str, required=True)
 
 try:
     params = parser.parse_dict({"name": "John Doe"})
@@ -313,15 +313,15 @@ except ParserRequiredParameterError as e:
 
 ##### `ParserInvalidChoiceError`
 
-Raised when the value is not defined in the `choices` parameter of `add_key`
+Raised when the value is not defined in the `choices` parameter of `add_param`
 
 ```py3
 from dictparser import DictionaryParser
 from dictparser.exceptions import ParserInvalidChoiceError
 
 parser = DictionaryParser()
-parser.add_key("name", str)
-parser.add_key("language", str, choices=["python", "bash"])
+parser.add_param("name", str)
+parser.add_param("language", str, choices=["python", "bash"])
 
 try:
     params = parser.parse_dict({"name": "John Doe", "language": "javascript"})
@@ -333,7 +333,7 @@ except ParserInvalidChoiceError as e:
 
 - `param`: The parameter name (str)
 - `value`: The parameter value (Any)
-- `choices`: The available choices added via `add_key` (list|set|tuple)
+- `choices`: The available choices added via `add_param` (list|set|tuple)
 
 
 ##### `ParserInvalidParameterError`
@@ -347,8 +347,8 @@ from dictparser import DictionaryParser
 from dictparser.exceptions import ParserInvalidParameterError
 
 parser = DictionaryParser()
-parser.add_key("name", str)
-parser.add_key("language", str, choices=["python", "bash"])
+parser.add_param("name", str)
+parser.add_param("language", str, choices=["python", "bash"])
 
 try:
     params = parser.parse_dict({"name": "John Doe", "language": "python", "email": "jdoe@gmail.com"}, strict=True)
@@ -368,7 +368,7 @@ from dictparser import DictionaryParser
 from dictparser.exceptions import ParserInvalidDataTypeError
 
 parser = DictionaryParser()
-parser.add_key("name", str)
+parser.add_param("name", str)
 
 try:
     params = parser.parse_dict([{"name", "John Doe"}])

@@ -142,7 +142,7 @@ class DictionaryParser(object):
         if action and not callable(action):
             raise TypeError("Parameter 'action' must be callable")
 
-    def add_key(
+    def add_param(
             self,
             name: str,
             type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
