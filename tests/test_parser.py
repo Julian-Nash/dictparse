@@ -1,5 +1,5 @@
-from dictparser import DictionaryParser, NameSpace, Param
-from dictparser.exceptions import (
+from dictparse import DictionaryParser, NameSpace, Param
+from dictparse.exceptions import (
     ParserTypeError,
     ParserRequiredKeyError,
     ParserInvalidChoiceError,

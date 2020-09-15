@@ -2,7 +2,7 @@ from app.users import create_user
 
 from flask import Flask, request
 from respond import JSONResponse
-from dictparser import DictionaryParser
+from dictparse import DictionaryParser
 
 
 def create_app():

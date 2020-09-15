@@ -1,4 +1,4 @@
-# dictparser
+# dictparse
 
 ![Python package](https://github.com/Julian-Nash/dictparse/workflows/Python%20package/badge.svg?branch=master)
 
@@ -8,14 +8,14 @@ It's particularly useful for parsing incoming request data in REST APIs & web ap
  of Flask, parsing form data from `request.form`, query string arguments from`request.args` or JSON data from 
 `request.json`.
  
-The `dictparser` design takes inspiration from Python's own `argparse` library, similar to the `ArgumentParser` class
+The `dictparse` design takes inspiration from Python's own `argparse` library, similar to the `ArgumentParser` class
 , taking input as a dictionary or dictionary-like object, enforcing rules, types, applying functions, default values and
  returning a `NameSpace`, with values mapped to attributes.
  
 ### Installation
 
 ```shell script
-pip install dictparser
+pip install dictparse
 ```
 
 ### Example
@@ -23,7 +23,7 @@ pip install dictparser
 The following code is a Python program that takes takes some data in the form of a dictionary and parses it:
 
 ```pycon
->>> from dictparser import DictionaryParser
+>>> from dictparse import DictionaryParser
 >>> parser = DictionaryParser()
 >>> parser.add_param("name", str, required=True)
 >>> params = parser.parse_dict({"name": "FooBar"})
@@ -36,7 +36,7 @@ The following code is a Python program that takes takes some data in the form of
 The first step is to create the DictionaryParser object
 
 ```pycon
->>> from dictparser import DictionaryParser
+>>> from dictparse import DictionaryParser
 >>> parser = DictionaryParser(description="Create a new user")
 ```
 
@@ -192,7 +192,7 @@ Returns a dictionary of the parsed parameters.
 Returns a `Param` object
 
 ```pycon
->>> from dictparser import DictionaryParser
+>>> from dictparse import DictionaryParser
 >>> parser = DictionaryParser()
 >>> parser.add_param("names", list, default=[])
 >>> params = parser.parse_dict({"names": ["foo", "bar"]})
@@ -215,7 +215,7 @@ from app.users import create_user
 
 from flask import Flask, request
 from respond import JSONResponse
-from dictparser import DictionaryParser
+from dictparse import DictionaryParser
 
 
 def create_app():
@@ -270,8 +270,8 @@ Exceptions will be raised in the following scenarios:
 Raised when a parameter cannot be parsed to the type declared in `add_param`
 
 ```py3
-from dictparser import DictionaryParser
-from dictparser.exceptions import ParserTypeError
+from dictparse import DictionaryParser
+from dictparse.exceptions import ParserTypeError
 
 parser = DictionaryParser()
 parser.add_param("age", int)
@@ -293,8 +293,8 @@ except ParserTypeError as e:
 Raised when a parameter is required but not found
 
 ```py3
-from dictparser import DictionaryParser
-from dictparser.exceptions import ParserRequiredParameterError
+from dictparse import DictionaryParser
+from dictparse.exceptions import ParserRequiredParameterError
 
 parser = DictionaryParser()
 parser.add_param("name", str)
@@ -313,8 +313,8 @@ except ParserRequiredParameterError as e:
 Raised when the value is not defined in the `choices` parameter of `add_param`
 
 ```py3
-from dictparser import DictionaryParser
-from dictparser.exceptions import ParserInvalidChoiceError
+from dictparse import DictionaryParser
+from dictparse.exceptions import ParserInvalidChoiceError
 
 parser = DictionaryParser()
 parser.add_param("name", str)
@@ -340,8 +340,8 @@ Raised when `strict` is set to `True` in `parse_dict`
 The `strict` parameter enforces the parser to only accept parameters that have been added to the parser
 
 ```py3
-from dictparser import DictionaryParser
-from dictparser.exceptions import ParserInvalidParameterError
+from dictparse import DictionaryParser
+from dictparse.exceptions import ParserInvalidParameterError
 
 parser = DictionaryParser()
 parser.add_param("name", str)
@@ -361,8 +361,8 @@ If an invalid data type for `data` is passed to `parse_dict` (such as a list or 
 `ParserInvalidDataTypeError`
 
 ```py3
-from dictparser import DictionaryParser
-from dictparser.exceptions import ParserInvalidDataTypeError
+from dictparse import DictionaryParser
+from dictparse.exceptions import ParserInvalidDataTypeError
 
 parser = DictionaryParser()
 parser.add_param("name", str)
