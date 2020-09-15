@@ -107,7 +107,7 @@ DictionaryParser.parse_dict(
 ) -> NameSpace:
 ```
 
-- `data`: A dictionary, dictionary-like object or a valid JSON string that can be decoded to a dictionary
+- `data`: A dictionary or dictionary-like object
 - `strict`: If `True`, raises an exception if any parameters not added to the parser are received
 - `action`: A function to apply to all parameters (after any type conversion and after action passed to `add_param`)
 
@@ -116,7 +116,7 @@ DictionaryParser.parse_dict(
 A `NameSpace` object is returned when calling `parse_dict` and contains the parsed data after applying your rules
 defined when adding arguments.
 
-Parameters can be accessed as attributes of the `NameSpace`, simply using dot notation:
+Parameters can be accessed as attributes of the `NameSpace` using dot notation:
 
 ```pycon
 >>> parser = DictionaryParser()
@@ -148,7 +148,7 @@ if the `dest` parameter is supplied when adding a parameter in `add_param`, the 
 
 The `NameSpace` object has the following available methods:
 
-#### get
+#### `get`
 
 ```py3
 NameSpace.get(
@@ -169,7 +169,7 @@ Calling the `get` method on the `NameSpace` works in the same way as calling `ge
 None
 ```
 
-#### to_dict
+#### `to_dict`
 
 ```py3
 NameSpace.to_dict() -> dict
@@ -187,7 +187,7 @@ Returns a dictionary of the parsed parameters.
 {'one': 'one', 'two': 2, 'three': [1, 2, 3]}
 ```
 
-#### get_param
+#### `get_param`
 
 Returns a `Param` object
 
