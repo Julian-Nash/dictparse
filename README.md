@@ -416,3 +416,19 @@ try:
 except ParserInvalidDataTypeError as e:
     print(e)  # Invalid type for 'data', must be a dict or dict-like object, not 'str'
 ```
+
+### Tests & coverage
+
+A test suite is available in the `tests` directory with 100% coverage (15/Sep/2020)
+
+```shell script
+Name                      Stmts   Miss  Cover
+---------------------------------------------
+dictparse/__init__.py         1      0   100%
+dictparse/exceptions.py      37      0   100%
+dictparse/parser.py         106      0   100%
+tests/__init__.py             0      0   100%
+tests/test_parser.py        310      0   100%
+---------------------------------------------
+TOTAL                       454      0   100%
+```

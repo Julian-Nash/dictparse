@@ -474,11 +474,20 @@ class TestParser(unittest.TestCase):
         params = parser.parse_dict({"foo": 42})
 
         param = params.get_param("bar")
+        self.assertEqual(param.name, "foo")
 
-        n = param.name
+    def test_add_param_invalid_type(self):
 
-        x = 1
+        parser = DictionaryParser()
 
+        with self.assertRaises(TypeError):
+            parser.add_param("foo", object)
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_parse_dict_invalid_action(self):
+
+        parser = DictionaryParser()
+        parser.add_param("foo", str)
+        parser.add_param("bar", str)
+
+        with self.assertRaises(TypeError):
+            params = parser.parse_dict({"foo": 1, "bar": 2}, action=1)

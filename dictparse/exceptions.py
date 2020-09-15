@@ -30,16 +30,11 @@ class ParserTypeError(ParserException):
     def __init__(self, param: str, value: Any, expected: Optional[type] = None):
         self.param = param
         self.value = value
-        if expected:
-            super().__init__(
-                f"Invalid value '{self.value}' for parameter '{self.param}', expected "
-                f"'{self._get_type_str(expected, from_type=True)}' not '{self._get_type_str(self.value)}'"
-            )
-        else:
-            super().__init__(
-                f"Invalid value '{self.value}' for parameter '{self.param}', expected"
-                f" '{self._get_type_str(type(self.value))}'"
-            )
+        super().__init__(
+            f"Invalid value '{self.value}' for parameter '{self.param}', expected "
+            f"'{self._get_type_str(expected, from_type=True)}' not '{self._get_type_str(self.value)}'"
+        )
+
 
 
 class ParserDuplicateKeyError(ParserException):
