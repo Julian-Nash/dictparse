@@ -467,6 +467,18 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(ParserInvalidDataTypeError):
             params = parser.parse_dict("foo")
 
+    def test_param_dest(self):
+
+        parser = DictionaryParser()
+        parser.add_param("foo", str, dest="bar")
+        params = parser.parse_dict({"foo": 42})
+
+        param = params.get_param("bar")
+
+        n = param.name
+
+        x = 1
+
 
 if __name__ == "__main__":
     unittest.main()

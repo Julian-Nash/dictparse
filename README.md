@@ -157,8 +157,10 @@ NameSpace.get(
 ) -> Union[None, Any]:
 ```
 
-Calling the `get` method on the `NameSpace` works in the same way as calling `get` on a dictionary, returning either
- the value for the `name` parameter or `None` if the `NameSpace` does not have that attribute.
+Calling the `get` method on the `NameSpace` and passing in a key works in the same way as calling `get` on a dictionary
+, returning either the value for the parameter requested or `None` if the `NameSpace` does not have that attribute.
+
+An optional default value can be supplied using the `default` parameter to be returned if the attribute does not exist.
  
 ```pycon
 >>> parser = DictionaryParser()
@@ -167,6 +169,10 @@ Calling the `get` method on the `NameSpace` works in the same way as calling `ge
 >>> params = parser.parse_dict({"age": 30, "height": 1.9})
 >>> params.weight
 None
+>>> params.get("age")
+30
+>>> params.get("foo", 42)
+42
 ```
 
 #### `to_dict`
@@ -203,7 +209,42 @@ Returns a `Param` object
 ['foo', 'bar']
 >>> names.default
 []
+```
 
+`Param` objects are hold all data associated with the parameter, as can be seen below in the `Param.__init__` method:
+
+```shell script
+class Param(object):
+
+    def __init__(
+            self,
+            name: str,
+            type_: Optional[Union[Type[str], Type[int], Type[float], Type[bool], Type[list], Type[dict], Type[set], Type[tuple]]] = None,
+            dest: Optional[str] = None,
+            required: Optional[bool] = False,
+            choices: Optional[Union[list, set, tuple]] = None,
+            action: Optional[Callable] = None,
+            description: Optional[str] = None,
+            default: Optional[Any] = None,
+            regex: Optional[str] = None,
+            value: Optional[Any] = None
+    ):
+```
+
+> Note - The `NameSpace` will be assigned the value for `dest` if supplied in `add_param`
+
+```pycon
+>>> from dictparse import DictionaryParser
+>>> parser = DictionaryParser()
+>>> parser.add_param("foo", str, dest="bar")
+>>> params = parser.parse_dict({"foo": 42})
+>>> param = params.get_param("bar")
+>>> param.name
+'foo'
+>>> param.dest
+'bar'
+>>> param.value
+'42'
 ```
 
 ### Flask example
@@ -263,8 +304,6 @@ if __name__ == "__main__":
 
 Exceptions will be raised in the following scenarios:
 
-#### `parse_dict`
-
 ##### `ParserTypeError`
 
 Raised when a parameter cannot be parsed to the type declared in `add_param`
@@ -290,7 +329,7 @@ except ParserTypeError as e:
 
 ##### `ParserRequiredParameterError`
 
-Raised when a parameter is required but not found
+Raised when `parse_dict` is called and a parameter is required, but not found
 
 ```py3
 from dictparse import DictionaryParser
@@ -310,7 +349,7 @@ except ParserRequiredParameterError as e:
 
 ##### `ParserInvalidChoiceError`
 
-Raised when the value is not defined in the `choices` parameter of `add_param`
+Raised when `parse_dict` is called and parses a value not defined in the `choices` parameter of `add_param`
 
 ```py3
 from dictparse import DictionaryParser
@@ -335,7 +374,7 @@ except ParserInvalidChoiceError as e:
 
 ##### `ParserInvalidParameterError`
 
-Raised when `strict` is set to `True` in `parse_dict`
+Raised calling `parse_dict` with `strict` set to `True`
 
 The `strict` parameter enforces the parser to only accept parameters that have been added to the parser
 
