@@ -193,6 +193,19 @@ Returns a dictionary of the parsed parameters.
 {'one': 'one', 'two': 2, 'three': [1, 2, 3]}
 ```
 
+`to_dict()` accepts an optional parameter `exclude`, a list of keys to exclude from the returned dictionary
+
+```pycon
+>>> from dictparse import DictionaryParser
+>>> parser = DictionaryParser()
+>>> parser.add_param("csrf_token", str, required=True)
+>>> parser.add_param("name", str)
+>>> parser.add_param("email", str)
+>>> params = parser.parse_dict({"csrf_token": "xxyyzz112233", "name": "foo", "email": "foo@bar.com"})
+>>> params.to_dict(exclude=["csrf_token"])
+{'name': 'foo', 'email': 'foo@bar.com'}
+```
+
 #### `get_param`
 
 Returns a `Param` object
