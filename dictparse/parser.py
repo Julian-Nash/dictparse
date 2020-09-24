@@ -77,9 +77,17 @@ class NameSpace(object):
         """ Get a Param, returns the Param object or None, unless a default is supplied """
         return self._params.get(name, default)
 
-    def to_dict(self) -> dict:
-        """ Returns the NameSpace as a dictionary """
-        return {k: getattr(self, k) for k in self._fields if getattr(self, k, None)}
+    def to_dict(self, exclude: Optional[list] = None) -> dict:
+        """ Returns the NameSpace as a dictionary
+
+        Args:
+            exclude (list): A list of keys to exclude from the returned dictionary
+        """
+        exclude = exclude if exclude is not None else []
+        return {
+            k: getattr(self, k) for k in self._fields if getattr(self, k, None)
+            if k not in exclude
+        }
 
 
 class DictionaryParser(object):
