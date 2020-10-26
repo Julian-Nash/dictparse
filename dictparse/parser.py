@@ -8,6 +8,7 @@ from .exceptions import (
 )
 
 from typing import Optional, Callable, List, Any, Union, Dict, Type
+from distutils.util import strtobool
 import keyword
 import re
 
@@ -246,10 +247,16 @@ class DictionaryParser(object):
                     continue
 
             if param.type_:
-                try:
-                    value = param.type_(value)
-                except ValueError:
-                    raise ParserTypeError(name, value, param.type_)
+                if param.type_ == bool:
+                    try:
+                        value = bool(strtobool(str(value)))
+                    except ValueError:
+                        raise ParserTypeError(name, value, param.type_)
+                else:
+                    try:
+                        value = param.type_(value)
+                    except ValueError:
+                        raise ParserTypeError(name, value, param.type_)
 
             if param.action:
                 value = param.action(value)

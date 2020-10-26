@@ -491,3 +491,49 @@ class TestParser(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             params = parser.parse_dict({"foo": 1, "bar": 2}, action=1)
+
+    def test_bools_with_string(self):
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": "1"})
+        self.assertEqual(params.active, True)
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": "0"})
+        self.assertEqual(params.active, False)
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": "true"})
+        self.assertEqual(params.active, True)
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": "false"})
+        self.assertEqual(params.active, False)
+
+    def test_bools_with_int(self):
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": 1})
+        self.assertEqual(params.active, True)
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": 0})
+        self.assertEqual(params.active, False)
+
+    def test_bools_with_bools(self):
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": True})
+        self.assertEqual(params.active, True)
+
+        parser = DictionaryParser()
+        parser.add_param("active", bool)
+        params: NameSpace = parser.parse_dict({"active": False})
+        self.assertEqual(params.active, False)
