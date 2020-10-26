@@ -19,6 +19,22 @@ class TestNamespace(unittest.TestCase):
             {"name": "foo", "age": 32, "csrf_token": "1234xyz"}
         )
 
+    def test_namespace_to_dict_returns_none_values(self):
+
+        parser = DictionaryParser()
+        parser.add_param("name", str)
+        parser.add_param("age", int)
+        parser.add_param("foo")
+        parser.add_param("csrf_token", str, required=True)
+        params = parser.parse_dict(
+            {"name": "foo", "age": 32, "csrf_token": "1234xyz"}
+        )
+
+        self.assertEqual(
+            params.to_dict(),
+            {"name": "foo", "age": 32, "foo": None, "csrf_token": "1234xyz"}
+        )
+
     def test_namespace_to_dict_exclude_list(self):
 
         parser = DictionaryParser()

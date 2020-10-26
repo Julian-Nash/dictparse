@@ -85,8 +85,7 @@ class NameSpace(object):
         """
         exclude = exclude if exclude is not None else []
         return {
-            k: getattr(self, k) for k in self._fields if getattr(self, k, None)
-            if k not in exclude
+            k: getattr(self, k) for k in self._fields if k not in exclude
         }
 
 
@@ -236,7 +235,7 @@ class DictionaryParser(object):
 
             value: Any = data.get(name)
 
-            if not value:
+            if value in ("", None):
                 param.value = param.default
                 continue
 
