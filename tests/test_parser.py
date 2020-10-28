@@ -537,3 +537,14 @@ class TestParser(unittest.TestCase):
         parser.add_param("active", bool)
         params: NameSpace = parser.parse_dict({"active": False})
         self.assertEqual(params.active, False)
+
+    def test_ignore_required(self):
+
+        parser = DictionaryParser()
+        parser.add_param("method_", str)
+        parser.add_param("url", str, required=True)
+        parser.add_param("name", str, required=True)
+
+        params: NameSpace = parser.parse_dict({"method_": "DELETE"}, ignore_required=["url", "name"])
+
+        self.assertEqual(params.method_, "DELETE")

@@ -7,7 +7,7 @@ from .exceptions import (
     ParserInvalidDataTypeError
 )
 
-from typing import Optional, Callable, List, Any, Union, Dict, Type
+from typing import Optional, Callable, List, Any, Union, Dict, Type, Sequence, Tuple, Set
 from distutils.util import strtobool
 import keyword
 import re
@@ -78,13 +78,13 @@ class NameSpace(object):
         """ Get a Param, returns the Param object or None, unless a default is supplied """
         return self._params.get(name, default)
 
-    def to_dict(self, exclude: Optional[list] = None) -> dict:
+    def to_dict(self, exclude: Optional[Union[List[str], Tuple[str], Set[str]]] = None) -> dict:
         """ Returns the NameSpace as a dictionary
 
         Args:
             exclude (list): A list of keys to exclude from the returned dictionary
         """
-        exclude = exclude if exclude is not None else []
+        exclude = list(exclude) if exclude else []
         return {
             k: getattr(self, k) for k in self._fields if k not in exclude
         }
@@ -205,7 +205,8 @@ class DictionaryParser(object):
             self,
             data: Dict[str, Any],
             strict: Optional[bool] = False,
-            action: Optional[Callable] = None
+            action: Optional[Callable] = None,
+            ignore_required: Optional[Union[List[str], Tuple[str], Set[str]]] = None
     ) -> NameSpace:
         """ Parse a dictionary or dictionary-like object, returning a NameSpace object
 
@@ -213,19 +214,26 @@ class DictionaryParser(object):
             data: A dict or dict-like object. Raises ParserInvalidDataTypeError if not a valid subclass of dict
             strict: If a key not added to the parser is received, raises a ParserInvalidParameterError, defaults to False
             action: A function to apply to all values (applied after type conversion)
+            ignore_required: A list (or any kind of list-like sequence) of strings to ignore if the required parameter
+                             has been set to True when adding a parameter to the parser
         Returns:
             NameSpace
         """
+
+        ignore_required: list = list(ignore_required) if ignore_required else []
 
         if not issubclass(type(data), dict):
             raise ParserInvalidDataTypeError(data)
 
         if action and not callable(action):
-            raise TypeError(f"Invalid value for 'map_', must be callable, not '{action}'")
+            raise TypeError(f"Invalid type for parameter 'action', '{type(action)}' is not callable")
 
         for r in self._required_keys:
             if r not in data:
-                raise ParserRequiredKeyError(r)
+                if r in ignore_required:
+                    pass
+                else:
+                    raise ParserRequiredKeyError(r)
 
         if strict:
             for k in data.keys():

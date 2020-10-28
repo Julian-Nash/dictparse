@@ -59,7 +59,7 @@ class TestNamespace(unittest.TestCase):
             {"name": "foo", "age": 32, "csrf_token": "1234xyz"}
         )
         self.assertEqual(
-            params.to_dict(exclude=("csrf_token")),
+            params.to_dict(exclude=["csrf_token"]),
             {"name": "foo", "age": 32}
         )
 
